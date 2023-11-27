@@ -1,7 +1,7 @@
-const mongoose = require('mongoose')
-const Campground = require('../models/campground')
-const citiesUA = require('../seeds/citiesUA')
-const { places, descriptors } = require('../seeds/seedHelpers')
+import mongoose from 'mongoose'
+import { Campground } from '../models/campground.js'
+import { places, descriptors } from '../seeds/seedHelpers.js'
+import citiesUA from '../seeds/citiesUA.js'
 
 mongoose
     .connect('mongodb://127.0.0.1:27017/yelp-camp')
@@ -10,7 +10,7 @@ mongoose
 
 seedDB().then(() => mongoose.connection.close())
 
-async function seedDB(campCount = 50) {
+async function seedDB(campCount = 25) {
     await Campground.deleteMany({})
 
     for (let i = 0; i < campCount; i++) {

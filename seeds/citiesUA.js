@@ -1,4 +1,4 @@
-module.exports = [
+export default [
     {
         city: 'Kyiv',
         lat: '50.4500',
