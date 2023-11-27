@@ -9,6 +9,7 @@ import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
 import { Campground } from './models/campground.js'
 import { ExpressError, catchAsyncErr } from './utils/errors.js'
+import { campgroundSchema } from './validation/schemas.js'
 
 mongoose
     .connect('mongodb://127.0.0.1:27017/yelp-camp')
@@ -29,16 +30,6 @@ app.use(bodyParser.json())
 app.use(methodOverride('_method'))
 
 function validateCampground(req, res, next) {
-    const campgroundSchema = Joi.object({
-        campground: Joi.object({
-            title: Joi.string().required(),
-            price: Joi.number().min(0).required(),
-            description: Joi.string().min(20).required(),
-            image: Joi.string().required(),
-            location: Joi.string().required(),
-        }).required(),
-    })
-
     const { error } = campgroundSchema.validate(req.body)
     if (error) {
         const errMessage = error.details.map(el => el.message)
