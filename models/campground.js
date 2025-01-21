@@ -15,6 +15,7 @@ const campgroundSchema = new Schema({
    ],
 })
 
+// ! better to move this to rotes/campgrounds.js
 campgroundSchema.post('findOneAndDelete', async function (camp) {
    if (!camp) return
    await Review.deleteMany({ _id: { $in: camp.reviews } })

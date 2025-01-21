@@ -7,9 +7,13 @@ import flash from 'connect-flash'
 import morgan from 'morgan'
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
+import passport from 'passport'
+import LocalAuthStrategy from 'passport-local'
+import { User } from './models/user.js'
 import { ExpressError } from './utils/errors.js'
-import campgrounds from './routes/campground.js'
-import reviews from './routes/reviews.js'
+import campgroundRoutes from './routes/campground.js'
+import reviewRoutes from './routes/reviews.js'
+import userRoutes from './routes/users.js'
 
 mongoose
    .connect('mongodb://127.0.0.1:27017/yelp-camp')
@@ -45,14 +49,25 @@ const sessionConfig = {
 app.use(session(sessionConfig))
 app.use(flash())
 
+app.use(passport.initialize())
+app.use(passport.session())
+passport.use(new LocalAuthStrategy(User.authenticate()))
+
+passport.serializeUser(User.serializeUser())
+passport.deserializeUser(User.deserializeUser())
+
 app.use((req, res, next) => {
+   console.log(req.session)
+
+   res.locals.currentUser = req.user
    res.locals.success = req.flash('success')
    res.locals.error = req.flash('error')
    next()
 })
 
-app.use('/campgrounds', campgrounds)
-app.use('/campgrounds/:id/reviews', reviews)
+app.use('/', userRoutes)
+app.use('/campgrounds', campgroundRoutes)
+app.use('/campgrounds/:id/reviews', reviewRoutes)
 
 app.get('/', (req, res) => {
    res.render('home')
@@ -71,4 +86,4 @@ app.use((err, req, res, next) => {
    )
 })
 
-app.listen(3000, () => console.log(`listening on http://localhost:3000 ✅`))
+app.listen(3000, () => console.log(`listening on http://127.0.0.1:3000 ✅`))
